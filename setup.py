@@ -4,15 +4,14 @@
 import os
 import sys
 
-
 try:
-    from setuptools import setup
+	from setuptools import setup
 except ImportError:
-    from distutils.core import setup
+	from distutils.core import setup
 
 if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    sys.exit()
+	os.system('python setup.py sdist upload')
+	sys.exit()
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
@@ -30,8 +29,7 @@ setup(
     ],
     package_dir={'py65emu': 'py65emu'},
     include_package_data=True,
-    install_requires=[
-    ],
+    install_requires=[],
     license="WTFPL",
     zip_safe=False,
     keywords='py65emu',

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 test_py65emu
 ----------------------------------
@@ -14,16 +13,15 @@ from py65emu import py65emu
 
 
 class TestPy65emu(unittest.TestCase):
+	def setUp(self):
+		pass
 
-    def setUp(self):
-        pass
+	def test_something(self):
+		pass
 
-    def test_something(self):
-        pass
-
-    def tearDown(self):
-        pass
+	def tearDown(self):
+		pass
 
 
 if __name__ == '__main__':
-    unittest.main()
+	unittest.main()
