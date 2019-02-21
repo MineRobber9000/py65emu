@@ -5,7 +5,9 @@ Credits
 Development Lead
 ----------------
 
-* Jeremy Neiman <docmarionum1@gmail.com>
+* Robert Miles <khuxkm@tilde.team>
+
+Original project (and most work) by Jeremy Neiman <docmarionum1@gmail.com>
 
 Contributors
 ------------

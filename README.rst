@@ -2,8 +2,8 @@
 Python 6502 Emulator
 ===============================
 
-.. image:: https://travis-ci.org/docmarionum1/py65emu.png?branch=master
-        :target: https://travis-ci.org/docmarionum1/py65emu
+.. image:: https://travis-ci.org/MineRobber9000/py65emu.png?branch=master
+        :target: https://travis-ci.org/MineRobber9000/py65emu
 
 
 A MOS 6502 Emulator intended to be used from within other programs.  All opcodes, included the undocumented illegal opcodes are implemented.

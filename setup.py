@@ -3,6 +3,7 @@
 
 import os
 import sys
+import py65emu
 
 try:
 	from setuptools import setup
@@ -18,12 +19,12 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='py65emu',
-    version='0.0.0',
+    version=py65emu.__version__,
     description='A 6502 Emulator',
     long_description=readme + '\n\n' + history,
-    author='Jeremy Neiman',
-    author_email='docmarionum1@gmail.com',
-    url='https://github.com/docmarionum1/py65emu',
+    author=py65emu.__author__,
+    author_email=py65emu.__email__,
+    url='https://github.com/MineRobber9000/py65emu',
     packages=[
         'py65emu',
     ],
