@@ -1,0 +1,5 @@
+#!/bin/bash
+# format - Formats the whole project. (Takes a while, so go get a covfefe while you wait?)
+# Requires yapf (https://github.com/google/yapf).
+
+yapf --style .style.yaml -i $(find | sed "s|^./||g" | grep -v "^\." | grep -v "__pycache__" | grep ".py$")
