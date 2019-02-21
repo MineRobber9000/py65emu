@@ -70,8 +70,7 @@ class MMU:
         In all writeable blocks reset all values to zero.
         """
 		for b in self.blocks:
-			if not b.readonly:
-				b.memory = array.array('B', [0] * b.length)
+			b.reset()
 
 	def addBlock(self, start, length, readonly=False, value=None, romOffset=0):
 		"""
