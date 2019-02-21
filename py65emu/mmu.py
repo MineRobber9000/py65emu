@@ -43,6 +43,7 @@ class Block:
 
 	def write(self,addr,val):
 		""" Set value at addr to val. """
+		if self.readonly: raise ReadOnlyError()
 		self.memory[self.getIndex(addr)]=(val&0xFF)
 
 	def read(self,addr):
@@ -106,31 +107,19 @@ class MMU:
 
 		raise IndexError
 
-	def getIndex(self, block, addr):
-		"""
-        Get the index, relative to the block, of the address in the block.
-        """
-		return addr - block.start
-
 	def write(self, addr, value):
 		"""
         Write a value to the given address if it is writeable.
         """
 		b = self.getBlock(addr)
-		if b.readonly:
-			raise ReadOnlyError()
-
-		i = self.getIndex(b, addr)
-
-		b.memory[i] = value & 0xff
+		b.write(addr,value)
 
 	def read(self, addr):
 		"""
         Return the value at the address.
         """
 		b = self.getBlock(addr)
-		i = self.getIndex(b, addr)
-		return b.memory[i]
+		return b.read(addr)
 
 	def readWord(self, addr):
 		return (self.read(addr + 1) << 8) + self.read(addr)
