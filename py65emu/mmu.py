@@ -29,7 +29,7 @@ class Block:
 		if self.readonly and (not force): return
 		if type(self.value)==list:
 			self.memory=pad([0 for x in range(self.offset)]+self.value,self.length)
-		elif type(self.value)==type(self.reset): # function
+		elif type(self.value)==type(lambda x: x**2): # function
 			self.memory=pad([0 for x in range(self.offset)]+[self.value(x+self.offset) for x in range(self.length)],self.length)
 		elif self.value is not None:
 			self.memory=pad([0 for x in range(self.offset)]+[(v&0xFF) for v in self.value.read()],self.length)
@@ -64,7 +64,10 @@ class MMU:
 		self.blocks = []
 
 		for b in blocks:
-			self.addBlock(*b)
+			if isinstance(b,Block):
+				self.addBlockObject(b)
+			else:
+				self.addBlock(*b)
 
 	def reset(self):
 		"""
@@ -94,6 +97,26 @@ class MMU:
 				raise MemoryRangeError()
 
 		newBlock = Block(start,length,readonly,value,romOffset)
+		self.blocks.append(newBlock)
+
+	def addBlockObject(self, newBlock):
+		"""
+        Add a block of memory to the list of blocks. If the
+        block overlaps with an existing block an exception will be thrown.
+
+        """
+
+		# check if the block overlaps with another
+		for b in self.blocks:
+			if ((
+			    newBlock.start + newBlock.length > b.start
+			    and newBlock.start + newBlock.length < b.start + b.length
+			) or (
+			    b.start + b.length > newBlock.start
+			    and b.start + b.length < newBlock.start + newBlock.length
+			)):
+				raise MemoryRangeError()
+
 		self.blocks.append(newBlock)
 
 	def getBlock(self, addr):

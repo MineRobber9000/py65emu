@@ -8,7 +8,7 @@ test_mmu
 import os
 import unittest
 
-from py65emu.mmu import MMU, MemoryRangeError, ReadOnlyError
+from py65emu.mmu import MMU, MemoryRangeError, ReadOnlyError, Block
 
 
 class TestMMU(unittest.TestCase):
@@ -29,6 +29,12 @@ class TestMMU(unittest.TestCase):
 		self.assertEqual(m.blocks[0].memory[0], 1)
 		self.assertEqual(m.blocks[0].memory[2], 3)
 		self.assertEqual(m.blocks[0].memory[3], 0)
+
+	def test_create_with_object(self):
+		m = MMU([Block(0,128,False,lambda x: 5),Block(128,128,False,lambda x: 4)])
+
+		self.assertEqual(m.read(0x0000),5)
+		self.assertEqual(m.read(0x0080),4)
 
 	def test_create_with_file(self):
 		path = os.path.join(
@@ -103,6 +109,16 @@ class TestMMU(unittest.TestCase):
 		m.reset()
 		self.assertEqual(m.read(0), 5)
 		self.assertEqual(m.read(16), 0)
+
+	def test_use_block_subclass(self):
+		class TestBlock(Block):
+			def read(self,addr):
+				return self.getIndex(addr)&0xFF
+		m = MMU([TestBlock(0,128),Block(128,128,True,lambda x: ((~x)&0xFF)),TestBlock(256,128)])
+
+		self.assertEqual(m.read(0x0000),0)
+		self.assertEqual(m.read(0x0080),0xFF)
+		self.assertEqual(m.read(0x0021),m.read(0x0121)) # 0x21
 
 	def tearDown(self):
 		pass
