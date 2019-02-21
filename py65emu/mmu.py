@@ -9,6 +9,11 @@ class ReadOnlyError(TypeError):
 	pass
 
 
+def pad(i,s,v=0):
+	""" Pad list i to size s using value v. """
+	return (i+[v for x in range(s)])[:s]
+
+
 class Block:
 	def __init__(self, start, length, readonly=False, value=None, romOffset=0):
 		""" A block of memory. """
@@ -23,7 +28,7 @@ class Block:
 		""" Resets memory block to initial state. """
 		if self.readonly and (not force): return
 		if type(self.value)==list:
-			self.memory=pad([0 for x in range(self.offset)]+self.memory,self.length)
+			self.memory=pad([0 for x in range(self.offset)]+self.value,self.length)
 		elif type(self.value)==type(self.reset): # function
 			self.memory=pad([0 for x in range(self.offset)]+[self.value(x+self.offset) for x in range(self.length)],self.length)
 		elif self.value is not None:
@@ -65,8 +70,8 @@ class MMU:
         In all writeable blocks reset all values to zero.
         """
 		for b in self.blocks:
-			if not b['readonly']:
-				b['memory'] = array.array('B', [0] * b['length'])
+			if not b.readonly:
+				b.memory = array.array('B', [0] * b.length)
 
 	def addBlock(self, start, length, readonly=False, value=None, romOffset=0):
 		"""
@@ -80,32 +85,15 @@ class MMU:
 		# check if the block overlaps with another
 		for b in self.blocks:
 			if ((
-			    start + length > b['start']
-			    and start + length < b['start'] + b['length']
+			    start + length > b.start
+			    and start + length < b.start + b.length
 			) or (
-			    b['start'] + b['length'] > start
-			    and b['start'] + b['length'] < start + length
+			    b.start + b.length > start
+			    and b.start + b.length < start + length
 			)):
 				raise MemoryRangeError()
 
-		newBlock = {
-		    'start': start,
-		    'length': length,
-		    'readonly': readonly,
-		    'memory': array.array('B', [0] * length)
-		}
-
-		# TODO: implement initialization value
-		if type(value) == list:
-			for i in range(len(value)):
-				newBlock['memory'][i + romOffset] = value[i]
-
-		elif value is not None:
-			a = array.array('B')
-			a.fromstring(value.read())
-			for i in range(len(a)):
-				newBlock['memory'][i + romOffset] = a[i]
-
+		newBlock = Block(start,length,readonly,value,romOffset)
 		self.blocks.append(newBlock)
 
 	def getBlock(self, addr):
@@ -114,7 +102,7 @@ class MMU:
         """
 
 		for b in self.blocks:
-			if addr >= b['start'] and addr < b['start'] + b['length']:
+			if addr >= b.start and addr < b.start + b.length:
 				return b
 
 		raise IndexError
@@ -123,19 +111,19 @@ class MMU:
 		"""
         Get the index, relative to the block, of the address in the block.
         """
-		return addr - block['start']
+		return addr - block.start
 
 	def write(self, addr, value):
 		"""
         Write a value to the given address if it is writeable.
         """
 		b = self.getBlock(addr)
-		if b['readonly']:
+		if b.readonly:
 			raise ReadOnlyError()
 
 		i = self.getIndex(b, addr)
 
-		b['memory'][i] = value & 0xff
+		b.memory[i] = value & 0xff
 
 	def read(self, addr):
 		"""
@@ -143,7 +131,7 @@ class MMU:
         """
 		b = self.getBlock(addr)
 		i = self.getIndex(b, addr)
-		return b['memory'][i]
+		return b.memory[i]
 
 	def readWord(self, addr):
 		return (self.read(addr + 1) << 8) + self.read(addr)

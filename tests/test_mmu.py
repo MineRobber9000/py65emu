@@ -26,9 +26,9 @@ class TestMMU(unittest.TestCase):
 	def test_create_with_list(self):
 		m = MMU([(0, 128, False, [1, 2, 3])])
 
-		self.assertEqual(m.blocks[0]['memory'][0], 1)
-		self.assertEqual(m.blocks[0]['memory'][2], 3)
-		self.assertEqual(m.blocks[0]['memory'][3], 0)
+		self.assertEqual(m.blocks[0].memory[0], 1)
+		self.assertEqual(m.blocks[0].memory[2], 3)
+		self.assertEqual(m.blocks[0].memory[3], 0)
 
 	def test_create_with_file(self):
 		path = os.path.join(
@@ -39,7 +39,7 @@ class TestMMU(unittest.TestCase):
 		with open(path, "rb") as f:
 			m = MMU([(0, 128, True, f)])
 
-		self.assertEqual(m.blocks[0]['memory'][0], 0xa9)
+		self.assertEqual(m.blocks[0].memory[0], 0xa9)
 
 	def test_create_overlapping(self):
 		with self.assertRaises(MemoryRangeError):
@@ -61,14 +61,14 @@ class TestMMU(unittest.TestCase):
 	def test_write(self):
 		m = MMU([(0, 128)])
 		m.write(16, 25)
-		self.assertEqual(m.blocks[0]['memory'][16], 25)
+		self.assertEqual(m.blocks[0].memory[16], 25)
 
 	def test_write_multiple_blocks(self):
 		m = MMU([(0, 128), (1024, 128)])
 		m.write(16, 25)
-		self.assertEqual(m.blocks[0]['memory'][16], 25)
+		self.assertEqual(m.blocks[0].memory[16], 25)
 		m.write(1056, 55)
-		self.assertEqual(m.blocks[1]['memory'][32], 55, m.blocks[1]['memory'])
+		self.assertEqual(m.blocks[1].memory[32], 55, m.blocks[1].memory)
 
 	def test_write_readonly(self):
 		m = MMU([(0, 16, True), (16, 16), (32, 16, True)])
@@ -98,7 +98,7 @@ class TestMMU(unittest.TestCase):
 
 	def test_reset(self):
 		m = MMU([(0, 16, True), (16, 16, False)])
-		m.blocks[0]['memory'][0] = 5
+		m.blocks[0].memory[0] = 5
 		m.write(16, 10)
 		m.reset()
 		self.assertEqual(m.read(0), 5)
