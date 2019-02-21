@@ -33,12 +33,12 @@ Example Usage:::
         c.step()
 
         # You can check the registers and memory values to determine what has changed
-        print c.r.a 	# A register
-        print c.r.x 	# X register
-        print c.r.y 	# Y register
-        print c.r.s 	# Stack Pointer
-        print c.r.pc 	# Program Counter
+        print(c.r.a)	# A register
+        print(c.r.x)	# X register
+        print(c.r.y)	# Y register
+        print(c.r.s)	# Stack Pointer
+        print(c.r.pc)	# Program Counter
 
-        print c.r.getFlag('C') # Get the value of a flag from the flag register.
+        print(c.r.getFlag('C')) # Get the value of a flag from the flag register.
 
-        print mmu.read(0xff) # Read a value from memory
+        print(mmu.read(0xff)) # Read a value from memory
