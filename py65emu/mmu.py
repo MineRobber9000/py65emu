@@ -9,6 +9,41 @@ class ReadOnlyError(TypeError):
 	pass
 
 
+class Block:
+	def __init__(self, start, length, readonly=False, value=None, romOffset=0):
+		""" A block of memory. """
+		self.start = start
+		self.length = length
+		self.readonly = readonly
+		self.value = value
+		self.offset = romOffset
+		self.reset(True)
+
+	def reset(self, force=False):
+		""" Resets memory block to initial state. """
+		if self.readonly and (not force): return
+		if type(self.value)==list:
+			self.memory=pad([0 for x in range(self.offset)]+self.memory,self.length)
+		elif type(self.value)==type(self.reset): # function
+			self.memory=pad([0 for x in range(self.offset)]+[self.value(x+self.offset) for x in range(self.length)],self.length)
+		elif self.value is not None:
+			self.memory=pad([0 for x in range(self.offset)]+[(v&0xFF) for v in self.value.read()],self.length)
+			self.value = self.memory[self.offset:]
+		else:
+			self.memory=pad([],self.length)
+
+	def getIndex(self,addr):
+		""" Gets index of address addr in this block. Assumes addr is in bounds. """
+		return addr-self.start
+
+	def write(self,addr,val):
+		""" Set value at addr to val. """
+		self.memory[self.getIndex(addr)]=(val&0xFF)
+
+	def read(self,addr):
+		""" Get value from address addr. """
+		return self.memory[self.getIndex(addr)]
+
 class MMU:
 	def __init__(self, blocks):
 		"""
