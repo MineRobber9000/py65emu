@@ -10,8 +10,7 @@ A MOS 6502 Emulator intended to be used from within other programs.  All opcodes
 
 Example Usage:::
 
-        from py65emu.cpu import CPU
-        from py65emu.mmu import MMU
+        from py65emu import CPU, MMU
 
         f = open("program.rom", "rb")  # Open your rom
 
